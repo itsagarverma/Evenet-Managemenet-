@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: event_management
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    container_name: backend_app
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
