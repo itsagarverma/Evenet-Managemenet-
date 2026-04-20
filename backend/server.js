@@ -12,29 +12,18 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-  ssl: { rejectUnauthorized: false }  // ADD THIS
+  ssl: { rejectUnauthorized: false }
 });
 
-// PostgreSQL connection
-const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-});
-
-// Test route
 app.get('/', (req, res) => {
   res.send('Server is running');
 });
 
-// Fetch users
 app.get('/users', async (req, res) => {
   const result = await pool.query('SELECT * FROM users');
   res.json(result.rows);
 });
-// Fetch bookings
+
 app.get('/api/bookings', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM bookings');
@@ -45,10 +34,6 @@ app.get('/api/bookings', async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log('Server running on port 5000');
-});
-// Fetch events
 app.get('/api/events', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM events');
@@ -57,4 +42,8 @@ app.get('/api/events', async (req, res) => {
     console.error(err);
     res.status(500).send('Error fetching events');
   }
+});
+
+app.listen(5000, () => {
+  console.log('Server running on port 5000');
 });
