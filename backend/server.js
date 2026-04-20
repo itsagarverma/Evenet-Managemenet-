@@ -25,7 +25,27 @@ app.get('/users', async (req, res) => {
   const result = await pool.query('SELECT * FROM users');
   res.json(result.rows);
 });
+// Fetch bookings
+app.get('/api/bookings', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM bookings');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error fetching bookings');
+  }
+});
 
 app.listen(5000, () => {
   console.log('Server running on port 5000');
+});
+// Fetch events
+app.get('/api/events', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM events');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error fetching events');
+  }
 });
