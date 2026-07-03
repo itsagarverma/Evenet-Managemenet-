@@ -1,0 +1,27 @@
+<section id="services" class="services">
+  <div class="services-header fade-up">
+    <p class="services-eyebrow">SERVICES SECTION</p>
+    <h2 class="services-main-title">Our Curated Experiences</h2>
+    <p class="services-subtitle">Crafting unforgettable moments, tailored to perfection</p>
+  </div>
+
+  <div class="services-scroll-wrapper">
+    <div class="services-track" #track>
+      <div class="service-card-new fade-up" *ngFor="let service of services">
+        <img [src]="service.image" [alt]="service.title">
+        <div class="service-card-overlay">
+          <h3>{{ service.title }}</h3>
+          <p>{{ service.description }}</p>
+          <button type="button" class="service-btn" (click)="goToQuery()">View Details</button>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="scroll-btn scroll-left" (click)="scroll(-1)">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button type="button" class="scroll-btn scroll-right" (click)="scroll(1)">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+</section>
