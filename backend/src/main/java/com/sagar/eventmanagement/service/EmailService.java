@@ -1,25 +1,42 @@
 package com.sagar.eventmanagement.service;
 
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Sends query notification emails via Brevo's HTTPS API (not raw SMTP).
+ * This is necessary because Render's free tier blocks outbound SMTP ports (25, 465, 587),
+ * but regular HTTPS (port 443) works fine - which is exactly what this API uses.
+ */
 @Service
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    @Value("${brevo.api.key}")
+    private String brevoApiKey;
 
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
+    @Value("${brevo.sender.email}")
+    private String senderEmail;
+
+    private final RestClient restClient = RestClient.create("https://api.brevo.com/v3");
 
     public void sendQueryNotification(String to, String subject, String body) {
-        SimpleMailMessage message = new SimpleMailMessage();
+        Map<String, Object> payload = Map.of(
+                "sender", Map.of("name", "The Sneh Moments", "email", senderEmail),
+                "to", List.of(Map.of("email", to)),
+                "subject", subject,
+                "textContent", body
+        );
 
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
-
-        mailSender.send(message);
+        restClient.post()
+                .uri("/smtp/email")
+                .header("api-key", brevoApiKey)
+                .header("Content-Type", "application/json")
+                .body(payload)
+                .retrieve()
+                .toBodilessEntity();
     }
 }

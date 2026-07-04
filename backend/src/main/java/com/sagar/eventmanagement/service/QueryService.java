@@ -4,6 +4,7 @@ import com.sagar.eventmanagement.dto.QueryRequestDTO;
 import com.sagar.eventmanagement.dto.QueryResponseDTO;
 import com.sagar.eventmanagement.entity.Query;
 import com.sagar.eventmanagement.repository.QueryRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,9 @@ public class QueryService {
 
     private final EmailService emailService;
     private final QueryRepository queryRepository;
+
+    @Value("${app.notification.email}")
+    private String notificationEmail;
 
     public QueryService(QueryRepository queryRepository,
                         EmailService emailService) {
@@ -52,7 +56,7 @@ public class QueryService {
         // Don't let a failed email stop the query from being saved successfully
         try {
             emailService.sendQueryNotification(
-                    "querywork.events@gmail.com",
+                    notificationEmail,
                     subject,
                     body
             );
