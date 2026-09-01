@@ -1,14 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&display=swap');
 
 :root {
-  --primary-color: #8d6b79; /* Mauve/Muted Purple from the slides */
-  --secondary-color: #702A8C; /* Logo lotus purple */
-  --accent-color: #c5a059; /* Elegant gold */
-  --text-dark: #2c1e24;
-  --text-light: #5a4b52;
-  --bg-light: #faf8f5;
+  --primary-color: #6b6b47; /* Deep olive - main accent */
+  --secondary-color: #4a4a30; /* Darker olive - headings, depth */
+  --accent-color: #c9a876; /* Warm gold/tan */
+  --text-dark: #2f2b22; /* Warm near-black */
+  --text-light: #6b6355; /* Warm taupe gray */
+  --bg-light: #f7f3ea; /* Cream/ivory background */
   --white: #ffffff;
-  --glass-bg: rgba(255, 255, 255, 0.7);
+  --olive-block: #6e6c4d; /* Solid olive block for split sections */
+  --glass-bg: rgba(247, 243, 234, 0.75);
   --glass-border: rgba(255, 255, 255, 0.4);
   
   --font-heading: 'Cinzel', serif;
@@ -194,12 +195,12 @@ section {
 .hero {
   height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  align-items: flex-end;
+  justify-content: flex-start;
+  text-align: left;
   position: relative;
-  background: url('https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
-  padding: 0 20px;
+  background: url('/assets/images/tailored-gallery-3.jpeg') center 20% / cover no-repeat;
+  padding: 0 60px 90px;
 }
 
 .hero::before {
@@ -209,22 +210,34 @@ section {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(44, 30, 36, 0.4); /* Dark overlay */
+  background: linear-gradient(180deg, rgba(47, 43, 34, 0.15) 0%, rgba(47, 43, 34, 0.1) 40%, rgba(47, 43, 34, 0.55) 100%);
 }
 
 .hero-content {
   position: relative;
   z-index: 10;
   color: var(--white);
-  max-width: 800px;
+  max-width: 650px;
+}
+
+.hero-content .hero-eyebrow {
+  display: block;
+  font-family: var(--font-subheading);
+  font-style: italic;
+  font-size: 1.15rem;
+  font-weight: 400;
+  margin-bottom: 8px;
+  opacity: 0.95;
 }
 
 .hero-content h1 {
-  font-size: 4rem;
+  font-size: 3rem;
+  font-weight: 500;
   color: var(--white);
-  margin-bottom: 20px;
-  text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-  letter-spacing: 2px;
+  margin-bottom: 24px;
+  text-shadow: 1px 1px 12px rgba(0,0,0,0.25);
+  letter-spacing: 4px;
+  line-height: 1.25;
 }
 
 .hero-content p {
@@ -235,7 +248,165 @@ section {
   letter-spacing: 1px;
 }
 
+.hero-brandmark {
+  position: absolute;
+  top: 40px;
+  left: 60px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--white);
+  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  opacity: 0.9;
+}
+
+.hero-brandmark img {
+  height: 28px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
+
 /* About Us Section (Based on slide 2) */
+/* Specializing In - scattered photo collage (editorial reference style) */
+.specializing {
+  padding: 90px 20px 100px;
+  background-color: var(--white);
+  text-align: center;
+}
+
+.specializing-label {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-bottom: 12px;
+}
+
+.specializing-title {
+  font-family: var(--font-subheading);
+  font-style: italic;
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--secondary-color);
+  margin-bottom: 60px;
+  line-height: 1.4;
+}
+
+.collage-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.collage-item {
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(47, 43, 34, 0.15);
+}
+
+.collage-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.collage-item.c1 { width: 220px; height: 280px; margin-top: 70px; }
+.collage-item.c2 { width: 260px; height: 340px; margin-top: 0; }
+.collage-item.c3 { width: 220px; height: 280px; margin-top: 50px; }
+
+/* Featured / Promise split section - solid olive block (editorial reference style) */
+.featured-split {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 70vh;
+}
+
+.featured-photo {
+  flex: 1 1 420px;
+  min-height: 500px;
+  background-size: cover;
+  background-position: center;
+}
+
+.featured-panel {
+  flex: 1 1 420px;
+  background-color: var(--olive-block);
+  color: var(--bg-light);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 60px;
+  position: relative;
+}
+
+.featured-panel .featured-number {
+  position: absolute;
+  top: 40px;
+  right: 50px;
+  font-family: var(--font-subheading);
+  font-style: italic;
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.featured-panel .featured-eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 14px;
+}
+
+.featured-panel h2 {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  color: var(--bg-light);
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+
+.featured-panel p {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.8;
+  opacity: 0.9;
+  margin-bottom: 30px;
+  max-width: 420px;
+}
+
+.featured-panel .btn {
+  align-self: flex-start;
+  border-color: var(--bg-light);
+  color: var(--bg-light);
+}
+
+.featured-panel .btn:hover {
+  background-color: var(--bg-light);
+  color: var(--olive-block);
+}
+
+@media (max-width: 768px) {
+  .collage-item.c1, .collage-item.c2, .collage-item.c3 {
+    width: 45%;
+    height: 220px;
+    margin-top: 0;
+  }
+  .featured-panel {
+    padding: 60px 30px;
+  }
+}
+
 .about {
   display: flex;
   align-items: center;
@@ -309,7 +480,7 @@ section {
 /* Services (Slide 3 & 4 transparent cards) */
 /* Services Section */
 .services {
-    background-color: #faf8f5;
+    background-color: var(--bg-light);
     padding: 100px 0 80px;
     overflow: hidden;
 }
