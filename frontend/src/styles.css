@@ -1011,6 +1011,87 @@ footer {
   .gallery-item.large {
     grid-row: auto;
   }
+
+  .logo img {
+    width: 42px;
+  }
+
+  .logo span {
+    font-size: 1.1rem;
+  }
+
+  .hero {
+    padding: 0 20px 60px;
+    align-items: flex-end;
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+
+  .hero-content .hero-eyebrow {
+    font-size: 0.95rem;
+  }
+
+  .hero-content h1 {
+    font-size: 1.9rem;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+    margin-bottom: 24px;
+  }
+
+  .specializing {
+    padding: 60px 16px 70px;
+  }
+
+  .specializing-title {
+    font-size: 1.4rem;
+    margin-bottom: 40px;
+  }
+
+  .collage-grid {
+    gap: 14px;
+  }
+
+  .collage-item.c1, .collage-item.c2, .collage-item.c3 {
+    width: 100%;
+    max-width: 320px;
+    height: 260px;
+  }
+
+  .featured-photo {
+    min-height: 320px;
+  }
+
+  .featured-panel {
+    padding: 50px 24px;
+  }
+
+  .featured-panel h2 {
+    font-size: 1.6rem;
+    letter-spacing: 1px;
+  }
+
+  .featured-panel .featured-number {
+    top: 24px;
+    right: 24px;
+  }
+}
+
+@media (max-width: 400px) {
+  .hero-content h1 {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 16px 20px;
+  }
 }
 
 /* ======================
