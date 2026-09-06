@@ -14,14 +14,11 @@ export interface EventItem {
 export interface QueryRequest {
   fullName: string;
   phone: string;
-  email: string;
-  eventType: string;
-  eventDate: string;
-  cityVenue: string;
-  budget: number;
-  numberOfGuests: number;
-  specialRequirements?: string;
-  message: string;
+  email?: string;
+  eventType?: string;
+  eventDate?: string;
+  cityVenue?: string;
+  message?: string;
 }
 
 export interface QueryResponse extends QueryRequest {

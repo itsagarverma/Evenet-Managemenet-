@@ -33,8 +33,6 @@ public class QueryService {
         query.setEventType(queryDTO.getEventType());
         query.setEventDate(queryDTO.getEventDate());
         query.setCityVenue(queryDTO.getCityVenue());
-        query.setBudget(queryDTO.getBudget());
-        query.setNumberOfGuests(queryDTO.getNumberOfGuests());
         query.setSpecialRequirements(queryDTO.getSpecialRequirements());
         query.setMessage(queryDTO.getMessage());
 
@@ -48,9 +46,7 @@ public class QueryService {
                 "Phone: " + savedQuery.getPhone() + "\n" +
                 "Event Type: " + savedQuery.getEventType() + "\n" +
                 "Event Date: " + savedQuery.getEventDate() + "\n" +
-                "Budget: " + savedQuery.getBudget() + "\n" +
-                "City/Venue: " + savedQuery.getCityVenue() + "\n" +
-                "Guests: " + savedQuery.getNumberOfGuests() + "\n" +
+                "City: " + savedQuery.getCityVenue() + "\n" +
                 "Message: " + savedQuery.getMessage();
 
         // Don't let a failed email stop the query from being saved successfully
@@ -84,8 +80,6 @@ public class QueryService {
         responseDTO.setEventType(query.getEventType());
         responseDTO.setEventDate(query.getEventDate());
         responseDTO.setCityVenue(query.getCityVenue());
-        responseDTO.setBudget(query.getBudget());
-        responseDTO.setNumberOfGuests(query.getNumberOfGuests());
         responseDTO.setSpecialRequirements(query.getSpecialRequirements());
         responseDTO.setMessage(query.getMessage());
 

@@ -24,13 +24,11 @@ export class QueryComponent {
   form = this.fb.group({
     fullName: ['', Validators.required],
     phone: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    eventType: ['', Validators.required],
-    eventDate: ['', Validators.required],
-    cityVenue: ['', Validators.required],
-    numberOfGuests: [null as number | null, [Validators.required, Validators.min(1)]],
-    budget: [null as number | null, [Validators.required, Validators.min(1)]],
-    message: ['', Validators.required]
+    email: [''],
+    eventType: [''],
+    eventDate: [''],
+    cityVenue: [''],
+    message: ['']
   });
 
   get f() {
@@ -52,13 +50,11 @@ export class QueryComponent {
       .submitQuery({
         fullName: value.fullName!,
         phone: value.phone!,
-        email: value.email!,
-        eventType: value.eventType!,
-        eventDate: value.eventDate!,
-        cityVenue: value.cityVenue!,
-        numberOfGuests: value.numberOfGuests!,
-        budget: value.budget!,
-        message: value.message!
+        email: value.email || undefined,
+        eventType: value.eventType || undefined,
+        eventDate: value.eventDate || undefined,
+        cityVenue: value.cityVenue || undefined,
+        message: value.message || undefined
       })
       .subscribe({
         next: () => {

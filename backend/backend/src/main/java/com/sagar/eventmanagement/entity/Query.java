@@ -23,11 +23,6 @@ public class Query {
 
     private String cityVenue;
 
-    // Approximate budget in ₹ entered directly by the user
-    private Double budget;
-
-    private Integer numberOfGuests;
-
     private String specialRequirements;
 
     private String message;

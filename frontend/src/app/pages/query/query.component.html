@@ -7,13 +7,13 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="form-grid">
         <div class="input-group">
-          <label>Full Name</label>
+          <label>Full Name *</label>
           <input type="text" placeholder="John Doe" formControlName="fullName">
           <div class="form-error" *ngIf="f['fullName'].touched && f['fullName'].invalid">Full name is required.</div>
         </div>
 
         <div class="input-group">
-          <label>Phone Number</label>
+          <label>Phone Number *</label>
           <input type="tel" placeholder="+91 98765 43210" formControlName="phone">
           <div class="form-error" *ngIf="f['phone'].touched && f['phone'].invalid">Phone number is required.</div>
         </div>
@@ -21,7 +21,6 @@
         <div class="input-group full-width">
           <label>Email ID</label>
           <input type="email" placeholder="you@example.com" formControlName="email">
-          <div class="form-error" *ngIf="f['email'].touched && f['email'].invalid">A valid email is required.</div>
         </div>
 
         <div class="input-group">
@@ -30,42 +29,29 @@
             <option value="">Select Event Type...</option>
             <option value="wedding">Wedding</option>
             <option value="engagement">Engagement</option>
+            <option value="anniversary">Anniversary</option>
             <option value="birthday">Birthday Celebration</option>
+            <option value="baby_shower">Baby Shower</option>
+            <option value="retirement_party">Retirement Party</option>
             <option value="corporate">Corporate Event</option>
             <option value="haldi_mehendi">Haldi & Mehendi</option>
             <option value="other">Other Celebration</option>
           </select>
-          <div class="form-error" *ngIf="f['eventType'].touched && f['eventType'].invalid">Please select an event type.</div>
         </div>
 
         <div class="input-group">
           <label>Event Date</label>
           <input type="date" formControlName="eventDate">
-          <div class="form-error" *ngIf="f['eventDate'].touched && f['eventDate'].invalid">Please select a date.</div>
-        </div>
-
-        <div class="input-group">
-          <label>City / Venue</label>
-          <input type="text" placeholder="Desired city or venue" formControlName="cityVenue">
-          <div class="form-error" *ngIf="f['cityVenue'].touched && f['cityVenue'].invalid">City/venue is required.</div>
-        </div>
-
-        <div class="input-group">
-          <label>Expected Guests</label>
-          <input type="number" placeholder="E.g., 500" formControlName="numberOfGuests">
-          <div class="form-error" *ngIf="f['numberOfGuests'].touched && f['numberOfGuests'].invalid">Enter a valid number of guests.</div>
         </div>
 
         <div class="input-group full-width">
-          <label>Approximate Budget (₹)</label>
-          <input type="number" min="0" placeholder="E.g., 1500000" formControlName="budget">
-          <div class="form-error" *ngIf="f['budget'].touched && f['budget'].invalid">Please enter your approximate budget.</div>
+          <label>City</label>
+          <input type="text" placeholder="Desired city" formControlName="cityVenue">
         </div>
 
         <div class="input-group full-width">
-          <label>Special Requirements & Message</label>
+          <label>Remarks and Messages</label>
           <textarea rows="4" placeholder="Tell us more about your dream event..." formControlName="message"></textarea>
-          <div class="form-error" *ngIf="f['message'].touched && f['message'].invalid">Please tell us a bit about your event.</div>
         </div>
       </div>
 
