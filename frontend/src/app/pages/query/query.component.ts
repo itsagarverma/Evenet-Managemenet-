@@ -26,7 +26,6 @@ export class QueryComponent {
     phone: ['', Validators.required],
     email: [''],
     eventType: [''],
-    eventDate: [''],
     cityVenue: [''],
     message: ['']
   });
@@ -52,7 +51,6 @@ export class QueryComponent {
         phone: value.phone!,
         email: value.email || undefined,
         eventType: value.eventType || undefined,
-        eventDate: value.eventDate || undefined,
         cityVenue: value.cityVenue || undefined,
         message: value.message || undefined
       })

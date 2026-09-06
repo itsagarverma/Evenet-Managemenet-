@@ -16,7 +16,6 @@ export interface QueryRequest {
   phone: string;
   email?: string;
   eventType?: string;
-  eventDate?: string;
   cityVenue?: string;
   message?: string;
 }
