@@ -1,24 +1,34 @@
-<nav class="navbar" [class.scrolled]="scrolled || simple" [class.simple-nav]="simple">
-  <div class="logo">
-    <img src="assets/icons/logo.png" alt="The Sneh Moments Logo">
-    <span>The Sneh Moments</span>
+<header class="site-header" [class.solid]="!isTransparent">
+  <div class="header-inner container">
+    <button class="brand" routerLink="/" (click)="closeMenu()">
+      <span class="brand-name" [class.on-hero]="isTransparent">The Sneh Moments</span>
+      <span class="brand-sub" [class.on-hero]="isTransparent">Bhopal &middot; Madhya Pradesh &middot; India</span>
+    </button>
+
+    <nav class="desktop-nav" [class.on-hero]="isTransparent">
+      <a routerLink="/" fragment="home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      <a routerLink="/" fragment="story">Weddings</a>
+      <a routerLink="/" fragment="services">Services</a>
+      <a routerLink="/" fragment="experiences">Our Work</a>
+      <a routerLink="/" fragment="story">About</a>
+      <a routerLink="/query">Contact</a>
+      <a routerLink="/query" class="btn-plum nav-cta" [class.on-hero]="isTransparent">Plan Your Wedding</a>
+    </nav>
+
+    <button class="hamburger" (click)="toggleMenu()" [class.on-hero]="isTransparent" aria-label="Toggle menu">
+      <span [class.open]="menuOpen"></span>
+      <span [class.open]="menuOpen" class="mid"></span>
+      <span [class.open]="menuOpen"></span>
+    </button>
   </div>
 
-  <ng-container *ngIf="!simple; else simpleLinks">
-    <div class="hamburger" (click)="toggleMenu()">
-      <i class="fas fa-bars"></i>
-    </div>
-    <ul class="nav-links" [class.active]="menuOpen">
-      <li><a routerLink="/" fragment="home" (click)="closeMenu()">Home</a></li>
-      <li><a routerLink="/" fragment="about" (click)="closeMenu()">About</a></li>
-      <li><a routerLink="/" fragment="gallery" (click)="closeMenu()">Gallery</a></li>
-      <li><a routerLink="/query" class="btn btn-primary" (click)="closeMenu()">Book Consultation</a></li>
-    </ul>
-  </ng-container>
-
-  <ng-template #simpleLinks>
-    <ul class="nav-links">
-      <li><a routerLink="/">Back to Home</a></li>
-    </ul>
-  </ng-template>
-</nav>
+  <div class="mobile-menu" *ngIf="menuOpen">
+    <a routerLink="/" fragment="home" (click)="closeMenu()">Home</a>
+    <a routerLink="/" fragment="story" (click)="closeMenu()">Weddings</a>
+    <a routerLink="/" fragment="services" (click)="closeMenu()">Services</a>
+    <a routerLink="/" fragment="experiences" (click)="closeMenu()">Our Work</a>
+    <a routerLink="/" fragment="story" (click)="closeMenu()">About</a>
+    <a routerLink="/query" (click)="closeMenu()">Contact</a>
+    <a routerLink="/query" class="btn-plum" (click)="closeMenu()">Plan Your Wedding</a>
+  </div>
+</header>

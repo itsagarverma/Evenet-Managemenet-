@@ -1,105 +1,145 @@
-<app-navbar></app-navbar>
+<app-navbar [transparent]="true"></app-navbar>
 
-<!-- Hero Section -->
+<!-- HERO -->
 <section id="home" class="hero">
-  <div class="hero-content fade-up visible">
-    <span class="hero-eyebrow">Crafting timeless</span>
-    <h1>INDIAN WEDDING<br>CELEBRATIONS</h1>
-    <p>Making your dream wedding a reality</p>
-    <a routerLink="/query" class="btn btn-primary" style="margin-top: 10px; display: inline-block;">Send Query</a>
+  <div class="hero-bg" *ngFor="let clip of heroClips; let i = index" [class.active]="i === activeClip"
+       [style.background-image]="'url(' + clip.image + ')'"></div>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-clip-indicator">
+    <button *ngFor="let clip of heroClips; let i = index" (click)="setClip(i)"
+            [class.active]="i === activeClip" aria-label="Go to hero slide"></button>
   </div>
-</section>
 
-<!-- Specializing In - real event photo collage -->
-<section class="specializing">
-  <p class="specializing-label">Specializing In</p>
-  <h2 class="specializing-title">Weddings, Celebrations &amp;<br>Cherished Moments</h2>
-  <div class="collage-grid">
-    <div class="collage-item c1 fade-up">
-      <img src="assets/images/tailored-gallery-1.jpeg" alt="The Sneh Moments - Mandap decor">
-    </div>
-    <div class="collage-item c2 fade-up">
-      <img src="assets/images/tailored-gallery-3.jpeg" alt="The Sneh Moments">
-    </div>
-    <div class="collage-item c3 fade-up">
-      <img src="assets/images/tailored-gallery-2.jpeg" alt="The Sneh Moments - Celebration">
-    </div>
-  </div>
-</section>
-
-<!-- About Section -->
-<section id="about" class="about">
-  <div class="about-color-block fade-in"></div>
-  <div class="about-container">
-    <div class="about-image fade-up">
-      <img src="assets/images/hero-baraat.jpeg" alt="The Sneh Moments">
-    </div>
-    <div class="about-text fade-up">
-      <h2>ABOUT US</h2>
-      <p>At The Sneh Moments, we don't just manage events... we create emotions, memories, and stories you'll
-        cherish for a lifetime. Every celebration is special to us, just like it is to you. Whether it's
-        your wedding day, your first anniversary, or a birthday full of love.</p>
-      <p>We handle everything with care, creativity, and a personal touch. Because for us, it's not just an
-        event... it's your moment, and we make sure it feels magical ✨</p>
-      <img src="assets/icons/logo.png" class="floral-accent" alt="The Sneh Moments Logo">
-    </div>
-  </div>
-</section>
-
-<!-- Services Section -->
-<app-services></app-services>
-
-<!-- Featured / Our Promise - split section with olive block -->
-<section class="featured-split">
-  <div class="featured-photo" style="background-image: url('assets/images/tailored-gallery-3.jpeg');"></div>
-  <div class="featured-panel">
-    <span class="featured-number">/ 01</span>
-    <p class="featured-eyebrow">Our Promise</p>
-    <h2>Every Detail,<br>Thoughtfully Crafted</h2>
-    <p>From the first conversation to the final farewell, we plan every moment of your
-      celebration with care - hospitality, logistics, show flow, and gifting, all handled
-      so you can simply be present in your own story.</p>
-    <a routerLink="/query" class="btn btn-outline">Book Consultation</a>
-  </div>
-</section>
-
-<!-- Gallery Section -->
-<section id="gallery" class="tailored">
-  <div class="tailored-container">
-    <div class="tailored-text fade-up">
-      <h2>TAILORED TO<br>YOUR NEEDS</h2>
-      <p>Your ideas, your dreams, your way — we craft every detail to reflect what makes your moments truly
-        special.</p>
-      <img src="assets/icons/logo.png" class="floral-accent" alt="The Sneh Moments Logo">
-    </div>
-    <div class="tailored-gallery">
-      <div class="gallery-item large fade-in">
-        <img src="assets/images/tailored-gallery-1.jpeg" alt="The Sneh Moments">
+  <div class="hero-text-wrap">
+    <div class="hero-text" [class.visible]="textVisible">
+      <p class="hero-sub">{{ heroClips[activeClip].sub }}</p>
+      <h1 class="hero-tagline" [class.italic]="activeClip === 1">{{ heroClips[activeClip].tagline }}</h1>
+      <div class="hero-cta" *ngIf="heroClips[activeClip].hasCTA">
+        <a routerLink="/query" class="btn-plum hero-btn-gold">Plan Your Wedding</a>
+        <a href="https://wa.me/919302259211" target="_blank" rel="noopener" class="btn-outline-ivory">WhatsApp Us</a>
       </div>
-      <div class="gallery-item fade-in" style="transition-delay: 0.2s;">
-        <img src="assets/images/tailored-gallery-3.jpeg" alt="The Sneh Moments">
+    </div>
+    <div class="hero-stamp">The Sneh Moments &middot; Bhopal</div>
+  </div>
+
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- OUR STORY -->
+<section id="story" class="story-section">
+  <img src="assets/images/tailored-gallery-3.jpeg" alt="The Sneh Moments - couple celebrating">
+  <div class="story-overlay"></div>
+  <div class="story-content-wrap container">
+    <div class="story-content fade-up">
+      <span class="divider-gold"></span>
+      <p class="eyebrow">Our Story</p>
+      <h2 class="story-title">More Than Just A Wedding.<br>It's Your Story.</h2>
+      <p class="story-desc">We are architects of love stories. Every wedding we create is a reflection of two souls &mdash; their heritage, their dreams, their joy. We don't just plan weddings. We curate moments that become lifelong memories.</p>
+      <a routerLink="/query" class="btn-outline-ivory">Get In Touch</a>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT WE DO -->
+<section id="services" class="section" style="background-color: var(--color-ivory);">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="divider-gold"></span>
+      <p class="eyebrow">What We Do</p>
+      <h2 class="section-title" style="color: var(--color-charcoal);">Services Crafted With Devotion</h2>
+    </div>
+
+    <div class="service-row fade-up" *ngFor="let s of services; let i = index" [class.reverse]="i % 2 !== 0">
+      <div class="service-image img-zoom">
+        <img [src]="s.image" [alt]="s.title">
       </div>
-      <div class="gallery-item fade-in" style="transition-delay: 0.4s;">
-        <img src="assets/images/tailored-gallery-2.jpeg" alt="The Sneh Moments">
+      <div class="service-text" [class.dark]="i % 2 !== 0">
+        <p class="service-num">0{{ i + 1 }}</p>
+        <h3 class="service-title">{{ s.title }}</h3>
+        <span class="service-divider"></span>
+        <p class="service-desc">{{ s.desc }}</p>
+        <a routerLink="/" fragment="services" [class]="i % 2 === 0 ? 'btn-outline-plum' : 'btn-outline-ivory'">Learn More</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Events Section (fetched live from Spring Boot backend) -->
-<section id="events" class="events">
-  <h2 class="section-title fade-up">UPCOMING EVENTS</h2>
-  <div class="events-grid">
-    <p *ngIf="loadingEvents">Loading events...</p>
-    <p class="events-empty" *ngIf="!loadingEvents && eventsError">Couldn't load events right now. Please try again later.</p>
-    <p class="events-empty" *ngIf="!loadingEvents && !eventsError && events.length === 0">No events to show yet.</p>
+<!-- EXPERIENCES / GALLERY -->
+<section id="experiences" class="section" style="background-color: var(--color-charcoal);">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="divider-gold"></span>
+      <p class="eyebrow">The Experiences</p>
+      <h2 class="section-title" style="color: var(--color-ivory);">Every Function, A Photographic Story</h2>
+    </div>
 
-    <div class="event-card fade-up" *ngFor="let event of events">
-      <h3>{{ event.title }}</h3>
-      <p>{{ event.eventDate }}</p>
-      <p>{{ event.location }}</p>
-      <p>{{ event.description }}</p>
-      <button routerLink="/query">Send Query</button>
+    <div class="gallery-grid">
+      <button class="gallery-item img-zoom fade-up" *ngFor="let g of galleryItems" routerLink="/" fragment="experiences">
+        <img [src]="g.image" [alt]="g.title">
+        <div class="gallery-item-overlay"></div>
+        <div class="gallery-item-label">{{ g.title }}</div>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- UPCOMING EVENTS (live from backend) -->
+<section id="events" class="section" style="background-color: var(--color-ivory);" *ngIf="!loadingEvents && !eventsError && events.length > 0">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="divider-gold"></span>
+      <p class="eyebrow">Upcoming Events</p>
+      <h2 class="section-title" style="color: var(--color-charcoal);">Join Us At These Celebrations</h2>
+    </div>
+    <div class="events-grid">
+      <div class="event-card fade-up" *ngFor="let event of events">
+        <h3>{{ event.title }}</h3>
+        <p class="event-meta">{{ event.eventDate }} &middot; {{ event.location }}</p>
+        <p class="event-desc">{{ event.description }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OUR APPROACH -->
+<section class="section" style="background-color: var(--color-cream);">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="divider-gold"></span>
+      <p class="eyebrow">Our Approach</p>
+      <h2 class="section-title" style="color: var(--color-charcoal);">How We Bring Your Dream to Life</h2>
+    </div>
+
+    <div class="approach-row fade-up" *ngFor="let step of approachSteps; let i = index" [class.reverse]="i % 2 !== 0">
+      <div class="approach-image img-zoom">
+        <img [src]="step.image" [alt]="step.title">
+      </div>
+      <div class="approach-text">
+        <div class="approach-bignum">{{ step.step }}</div>
+        <p class="eyebrow" style="margin-bottom: 0.75rem;">{{ step.step }}</p>
+        <h3 class="approach-title">{{ step.title }}</h3>
+        <span class="service-divider"></span>
+        <p class="service-desc">{{ step.desc }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <img src="assets/images/hero-baraat.jpeg" alt="The Sneh Moments - your wedding starts here">
+  <div class="final-cta-overlay"></div>
+  <div class="final-cta-content fade-up">
+    <span class="divider-gold"></span>
+    <h2 class="final-cta-title">Your Wedding<br>Starts Here.</h2>
+    <p class="final-cta-desc">Begin your journey with The Sneh Moments. Tell us your story and let us craft the celebration of a lifetime.</p>
+    <div class="hero-cta">
+      <a routerLink="/query" class="btn-plum hero-btn-gold">Plan Your Wedding</a>
+      <a href="https://wa.me/919302259211" target="_blank" rel="noopener" class="btn-outline-ivory">WhatsApp Us</a>
     </div>
   </div>
 </section>

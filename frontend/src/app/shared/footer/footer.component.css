@@ -1,0 +1,99 @@
+.site-footer {
+  background-color: var(--color-charcoal);
+  color: var(--color-ivory);
+  padding: var(--space-xl) 0 var(--space-md);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 3rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer-brand {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.footer-tag {
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin-bottom: 1.5rem;
+}
+
+.footer-desc {
+  font-size: 0.82rem;
+  line-height: 1.8;
+  color: rgba(250,247,242,0.55);
+  max-width: 280px;
+}
+
+.footer-col-title {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin-bottom: 1.5rem;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.footer-links a, .footer-links span {
+  font-size: 0.82rem;
+  color: rgba(250,247,242,0.55);
+  transition: color 0.2s ease;
+}
+.footer-links a:hover { color: var(--color-ivory); }
+
+.footer-contact { display: flex; flex-direction: column; gap: 0.9rem; }
+.footer-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  opacity: 0.7;
+  margin-bottom: 0.25rem;
+}
+.footer-value {
+  font-size: 0.82rem;
+  color: rgba(250,247,242,0.7);
+  line-height: 1.6;
+}
+a.footer-value:hover { color: var(--color-ivory); }
+
+.footer-social {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.footer-social a {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(250,247,242,0.5);
+  transition: color 0.2s ease;
+}
+.footer-social a:hover { color: var(--color-gold); }
+
+.footer-bottom {
+  padding-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-bottom p {
+  font-size: 0.7rem;
+  color: rgba(250,247,242,0.3);
+}

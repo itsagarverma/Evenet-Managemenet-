@@ -10,15 +10,19 @@ import { CommonModule } from '@angular/common';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
-  // When true, shows the simplified navbar used on the query page
-  @Input() simple = false;
+  // Transparent-over-hero navbar (home page). Set false for pages with no hero image behind it.
+  @Input() transparent = false;
 
   scrolled = false;
   menuOpen = false;
 
   @HostListener('window:scroll')
   onScroll() {
-    this.scrolled = window.scrollY > 50;
+    this.scrolled = window.scrollY > 60;
+  }
+
+  get isTransparent(): boolean {
+    return this.transparent && !this.scrolled && !this.menuOpen;
   }
 
   toggleMenu() {
