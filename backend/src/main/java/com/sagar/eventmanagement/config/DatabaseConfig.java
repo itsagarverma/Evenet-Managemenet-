@@ -27,19 +27,19 @@ public class DatabaseConfig {
     @Value("${DATABASE_URL:}")
     private String databaseUrl;
 
-    @Value("${DB_URL:jdbc:postgresql://localhost:5432/eventdb}")
+    @Value("${DB_URL:jdbc:postgresql://localhost:5432/event_management}")
     private String fallbackUrl;
 
     @Value("${DB_USERNAME:postgres}")
     private String fallbackUsername;
 
-    @Value("${DB_PASSWORD:postgres}")
+    @Value("${DB_PASSWORD:}")
     private String fallbackPassword;
 
     @Bean
     public DataSource dataSource() throws Exception {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName("org.postgresql.Driver");
+        config.setDriverClassName(fallbackUrl.startsWith("jdbc:h2:") ? "org.h2.Driver" : "org.postgresql.Driver");
 
         if (databaseUrl != null && !databaseUrl.isBlank()) {
             // Render/Supabase-style combined URL: postgresql://user:password@host:5432/dbname

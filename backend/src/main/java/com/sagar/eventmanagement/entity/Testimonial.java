@@ -1,0 +1,3 @@
+package com.sagar.eventmanagement.entity;
+import jakarta.persistence.*; import lombok.Getter; import lombok.Setter; import java.time.Instant;
+@Entity @Table(name="testimonials") @Getter @Setter public class Testimonial { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id; @Column(nullable=false) private String name; private String eventType; private String location; @Column(length=3000,nullable=false) private String review; @Column(nullable=false) private boolean published=false; @Column(nullable=false) private int displayOrder; @Column(nullable=false) private Instant updatedAt=Instant.now(); @PreUpdate void touch(){updatedAt=Instant.now();} }

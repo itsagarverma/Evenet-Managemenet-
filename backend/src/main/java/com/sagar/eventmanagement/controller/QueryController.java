@@ -19,17 +19,17 @@ public class QueryController {
     }
 
     // Anyone can submit a query - no login required
+    public record QueryReceipt(Long id) {}
     @PostMapping
-    public QueryResponseDTO createQuery(
+    public QueryReceipt createQuery(
             @Valid @RequestBody QueryRequestDTO queryDTO) {
-        return queryService.saveQuery(queryDTO);
+        return new QueryReceipt(queryService.saveQuery(queryDTO).getId());
     }
 
-    // Lists every submitted query - intended for your own admin use.
-    // There's no login system, so anyone with the URL can view this.
-    // See the note in application.properties before you go live.
+    // Private admin listing; Spring Security restricts /queries/** to ADMIN.
     @GetMapping("/all")
     public List<QueryResponseDTO> getAllQueries() {
         return queryService.getAllQueries();
     }
+
 }

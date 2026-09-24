@@ -1,6 +1,9 @@
 package com.sagar.eventmanagement.dto;
 
 import lombok.Data;
+import java.time.Instant;
+import java.time.LocalDate;
+import com.sagar.eventmanagement.entity.LeadStatus;
 
 @Data
 public class QueryResponseDTO {
@@ -14,4 +17,11 @@ public class QueryResponseDTO {
     private String cityVenue;
     private String specialRequirements;
     private String message;
+    private Integer guestCount;
+    private String budget;
+    private Instant createdAt;
+    private LeadStatus status;
+    private LocalDate followUpDate;
+    private String followUpNote;
+    private String nextAction;
 }

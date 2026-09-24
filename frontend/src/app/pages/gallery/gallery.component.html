@@ -1,0 +1,13 @@
+<app-navbar [transparent]="false"></app-navbar>
+<main class="gallery-page container">
+  <a routerLink="/" fragment="experiences" class="gallery-back">← Our Work</a>
+  <ng-container *ngIf="loading"><p class="gallery-message">Loading gallery…</p></ng-container>
+  <section *ngIf="!loading && error" class="gallery-message"><h1>Gallery unavailable</h1><p>This experience may have moved or is not currently published.</p><a routerLink="/" fragment="experiences">Return to Our Work</a></section>
+  <ng-container *ngIf="!loading && !error && category">
+    <header class="gallery-heading"><p class="eyebrow">The Experiences</p><h1>{{category.name}}</h1><p *ngIf="category.description">{{category.description}}</p></header>
+    <p class="gallery-message" *ngIf="!category.images?.length">Photos for this experience are coming soon.</p>
+    <div class="photo-grid"><button *ngFor="let photo of category.images" (click)="active=photo" [attr.aria-label]="'View ' + (photo.altText || category.name + ' photo')"><img [src]="api.mediaUrl(photo.url)" [alt]="photo.altText || category.name"></button></div>
+  </ng-container>
+</main>
+<div class="lightbox" *ngIf="active" (click)="active=undefined" role="dialog" aria-modal="true"><button class="lightbox-close" (click)="$event.stopPropagation();active=undefined" aria-label="Close">×</button><img [src]="api.mediaUrl(active.url)" [alt]="active.altText || category?.name"></div>
+<app-footer></app-footer>

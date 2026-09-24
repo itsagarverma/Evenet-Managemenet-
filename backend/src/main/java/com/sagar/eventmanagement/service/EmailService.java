@@ -3,6 +3,8 @@ package com.sagar.eventmanagement.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,8 @@ import java.util.Map;
 @Service
 public class EmailService {
 
+    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
+
     @Value("${brevo.api.key}")
     private String brevoApiKey;
 
@@ -24,6 +28,11 @@ public class EmailService {
     private final RestClient restClient = RestClient.create("https://api.brevo.com/v3");
 
     public void sendQueryNotification(String to, String subject, String body) {
+        if (brevoApiKey == null || brevoApiKey.isBlank() || senderEmail == null || senderEmail.isBlank()
+                || to == null || to.isBlank()) {
+            log.warn("Brevo notification skipped because sender, recipient, or API key is not configured");
+            return;
+        }
         Map<String, Object> payload = Map.of(
                 "sender", Map.of("name", "The Sneh Moments", "email", senderEmail),
                 "to", List.of(Map.of("email", to)),

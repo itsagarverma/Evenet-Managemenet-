@@ -242,7 +242,9 @@
   padding: 0;
   overflow: hidden;
   background: var(--color-plum);
+  text-decoration: none;
 }
+.gallery-state { grid-column: 1 / -1; color: var(--color-ivory); text-align: center; padding: 2rem 0; }
 .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
 .gallery-item-overlay {
   position: absolute;
@@ -359,3 +361,18 @@
   .gallery-grid { grid-template-columns: repeat(2, 1fr); }
   .story-content-wrap { padding: 0 1.5rem; }
 }
+.testimonial-section { background: var(--color-cream); }
+.testimonial-state { text-align: center; color: var(--color-charcoal); padding: 2.5rem 1rem; }
+.testimonial-slider { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1rem; max-width: 980px; margin: 0 auto; }
+.testimonial-card { min-height: 230px; padding: clamp(1.5rem, 5vw, 3.5rem); background: var(--color-ivory); border: 1px solid rgba(174, 139, 73, .4); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: testimonial-in .28s ease both; }
+.testimonial-card blockquote { max-width: 740px; margin: 1.5rem auto; font-family: var(--font-serif); font-size: clamp(1.2rem, 2.5vw, 1.8rem); line-height: 1.55; color: var(--color-charcoal); }
+.testimonial-author { margin: 0; color: var(--color-plum); font-weight: 600; letter-spacing: .04em; }
+.testimonial-meta { margin: .4rem 0 0; color: var(--color-charcoal); opacity: .72; font-size: .9rem; }
+.testimonial-arrow { width: 44px; height: 44px; border: 1px solid var(--color-gold); border-radius: 50%; background: transparent; color: var(--color-plum); font-size: 2rem; line-height: 1; cursor: pointer; transition: background .2s, color .2s; }
+.testimonial-arrow:hover { background: var(--color-plum); color: var(--color-ivory); }
+.testimonial-dots { display: flex; justify-content: center; gap: .6rem; margin-top: 1.3rem; }
+.testimonial-dots button { width: 9px; height: 9px; padding: 0; border: 1px solid var(--color-plum); border-radius: 50%; background: transparent; cursor: pointer; }
+.testimonial-dots button.active { background: var(--color-plum); }
+@keyframes testimonial-in { from { opacity: .5; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@media(max-width: 600px) { .testimonial-slider { grid-template-columns: 30px minmax(0, 1fr) 30px; gap: .35rem; } .testimonial-arrow { width: 30px; height: 36px; border-radius: 6px; font-size: 1.6rem; } .testimonial-card { min-height: 250px; padding: 1.2rem .9rem; } }
+.service-cms-state { text-align: center; padding: 1.5rem; color: var(--color-charcoal); }

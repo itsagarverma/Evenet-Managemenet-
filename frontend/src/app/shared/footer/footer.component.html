@@ -36,20 +36,26 @@
         <div class="footer-contact">
           <div>
             <div class="footer-label">Location</div>
-            <div class="footer-value">Bhopal, Madhya Pradesh<br>Destination Events &middot; Pan India</div>
+            <div class="footer-value">{{ contact.address || 'Bhopal, Madhya Pradesh' }}<br>Destination Events &middot; Pan India</div>
           </div>
           <div>
             <div class="footer-label">WhatsApp</div>
-            <a class="footer-value" href="https://wa.me/919302259211" target="_blank" rel="noopener">+91 93022 59211</a>
+            <a class="footer-value" [href]="contact.whatsappUrl || 'https://wa.me/919302259211'" target="_blank" rel="noopener">{{ contact.whatsapp || '+91 9302259211' }}</a>
           </div>
           <div>
             <div class="footer-label">Email</div>
-            <a class="footer-value" href="mailto:thesnehmoments&#64;gmail.com">thesnehmoments&#64;gmail.com</a>
+            <a class="footer-value" [href]="'mailto:' + (contact.email || 'thesnehmoments@gmail.com')">{{ contact.email || 'thesnehmoments@gmail.com' }}</a>
+          </div>
+          <div *ngIf="contact.phone">
+            <div class="footer-label">Phone</div>
+            <a class="footer-value" [href]="'tel:' + contact.phone">{{ contact.phone }}</a>
           </div>
         </div>
 
         <div class="footer-social">
-          <a href="https://www.instagram.com/thesnehmoments" target="_blank" rel="noopener">Instagram</a>
+          <a *ngIf="contact.instagram" [href]="contact.instagram" target="_blank" rel="noopener">Instagram</a>
+          <a *ngIf="contact.facebook" [href]="contact.facebook" target="_blank" rel="noopener">Facebook</a>
+          <a *ngIf="contact.website" [href]="contact.website" target="_blank" rel="noopener">Website</a>
         </div>
       </div>
     </div>
@@ -60,3 +66,6 @@
     </div>
   </div>
 </footer>
+<a class="whatsapp-float" [href]="contact.whatsappUrl || 'https://wa.me/919302259211'" target="_blank" rel="noopener" aria-label="Chat with The Sneh Moments on WhatsApp">
+  <span aria-hidden="true">✆</span><span class="whatsapp-float-label">WhatsApp</span>
+</a>

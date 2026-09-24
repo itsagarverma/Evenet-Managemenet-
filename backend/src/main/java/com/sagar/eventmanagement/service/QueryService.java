@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.time.LocalDate;
+import com.sagar.eventmanagement.entity.LeadStatus;
+import com.sagar.eventmanagement.exception.ResourceNotFoundException;
 
 @Service
 public class QueryService {
@@ -35,6 +38,8 @@ public class QueryService {
         query.setCityVenue(queryDTO.getCityVenue());
         query.setSpecialRequirements(queryDTO.getSpecialRequirements());
         query.setMessage(queryDTO.getMessage());
+        query.setGuestCount(queryDTO.getGuestCount());
+        query.setBudget(queryDTO.getBudget());
 
         Query savedQuery = queryRepository.save(query);
 
@@ -70,6 +75,15 @@ public class QueryService {
                 .toList();
     }
 
+    public QueryResponseDTO updateLead(Long id, LeadStatus status, LocalDate followUpDate, String followUpNote, String nextAction) {
+        Query q = queryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Enquiry not found: " + id));
+        if (status != null) q.setStatus(status);
+        q.setFollowUpDate(followUpDate);
+        q.setFollowUpNote(followUpNote);
+        q.setNextAction(nextAction);
+        return mapToResponseDTO(queryRepository.save(q));
+    }
+
     private QueryResponseDTO mapToResponseDTO(Query query) {
         QueryResponseDTO responseDTO = new QueryResponseDTO();
 
@@ -82,6 +96,13 @@ public class QueryService {
         responseDTO.setCityVenue(query.getCityVenue());
         responseDTO.setSpecialRequirements(query.getSpecialRequirements());
         responseDTO.setMessage(query.getMessage());
+        responseDTO.setGuestCount(query.getGuestCount());
+        responseDTO.setBudget(query.getBudget());
+        responseDTO.setCreatedAt(query.getCreatedAt());
+        responseDTO.setStatus(query.getStatus());
+        responseDTO.setFollowUpDate(query.getFollowUpDate());
+        responseDTO.setFollowUpNote(query.getFollowUpNote());
+        responseDTO.setNextAction(query.getNextAction());
 
         return responseDTO;
     }

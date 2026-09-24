@@ -25,4 +25,7 @@ public class QueryRequestDTO {
     private String specialRequirements;
 
     private String message;
+
+    private Integer guestCount;
+    private String budget;
 }

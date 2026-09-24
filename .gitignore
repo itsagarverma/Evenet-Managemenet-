@@ -1,0 +1,12 @@
+/backend/target/
+/backend/uploads/
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.angular/
+**/.env
+**/.env.*
+!**/.env.example
+/frontend-update.zip
+/backend.zip
+/frontend.zip
+.DS_Store

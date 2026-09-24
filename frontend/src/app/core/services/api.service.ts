@@ -23,6 +23,13 @@ export interface QueryRequest {
 export interface QueryResponse extends QueryRequest {
   id: number;
 }
+export interface QueryReceipt { id: number; }
+
+export interface GalleryImage { id: number; url: string; altText: string; displayOrder: number; published: boolean; }
+export interface GalleryCategory { id: number; name: string; slug: string; description?: string; coverImage?: string; published: boolean; displayOrder: number; images?: GalleryImage[]; }
+export interface ManagedService { id: number; name: string; description: string; imageUrl?: string; published: boolean; displayOrder: number; }
+export interface TestimonialItem { id: number; name: string; eventType?: string; location?: string; review: string; published: boolean; displayOrder: number; }
+export interface ContactSettings { email?: string; phone?: string; whatsapp?: string; whatsappUrl?: string; instagram?: string; facebook?: string; website?: string; address?: string; }
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +47,14 @@ export class ApiService {
     return this.http.get<EventItem>(`${this.baseUrl}/events/${id}`);
   }
 
-  submitQuery(query: QueryRequest): Observable<QueryResponse> {
-    return this.http.post<QueryResponse>(`${this.baseUrl}/queries`, query);
+  submitQuery(query: QueryRequest): Observable<QueryReceipt> {
+    return this.http.post<QueryReceipt>(`${this.baseUrl}/queries`, query);
   }
+
+  getGalleryCategories(): Observable<GalleryCategory[]> { return this.http.get<GalleryCategory[]>(`${this.baseUrl}/api/gallery/categories`); }
+  getGalleryCategory(slug: string): Observable<GalleryCategory> { return this.http.get<GalleryCategory>(`${this.baseUrl}/api/gallery/categories/${encodeURIComponent(slug)}`); }
+  getServices(): Observable<ManagedService[]> { return this.http.get<ManagedService[]>(`${this.baseUrl}/api/services`); }
+  getTestimonials(): Observable<TestimonialItem[]> { return this.http.get<TestimonialItem[]>(`${this.baseUrl}/api/testimonials`); }
+  getContactSettings(): Observable<ContactSettings> { return this.http.get<ContactSettings>(`${this.baseUrl}/api/contact-settings`); }
+  mediaUrl(path?: string): string { return path ? (path.startsWith('http') || path.startsWith('assets/') ? path : `${this.baseUrl}${path}`) : 'assets/images/tailored-gallery-1.jpeg'; }
 }

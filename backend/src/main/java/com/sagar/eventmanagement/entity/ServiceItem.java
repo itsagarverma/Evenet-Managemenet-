@@ -1,0 +1,3 @@
+package com.sagar.eventmanagement.entity;
+import jakarta.persistence.*; import lombok.Getter; import lombok.Setter; import java.time.Instant;
+@Entity @Table(name="managed_services") @Getter @Setter public class ServiceItem { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id; @Column(nullable=false) private String name; @Column(length=2000) private String description; @Column(length=500) private String imageUrl; @Column(nullable=false) private boolean published=true; @Column(nullable=false) private int displayOrder; @Column(nullable=false) private Instant updatedAt=Instant.now(); @PreUpdate void touch(){updatedAt=Instant.now();} }

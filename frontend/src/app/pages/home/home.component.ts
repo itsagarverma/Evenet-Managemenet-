@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../shared/navbar/navbar.component';
 import { FooterComponent } from '../../shared/footer/footer.component';
-import { ApiService, EventItem } from '../../core/services/api.service';
+import { ApiService, ContactSettings, EventItem, GalleryCategory, TestimonialItem } from '../../core/services/api.service';
 
 interface HeroClip {
   image: string;
@@ -15,6 +15,7 @@ interface HeroClip {
 interface GalleryItem {
   title: string;
   image: string;
+  slug: string;
 }
 
 interface ServiceItem {
@@ -39,12 +40,21 @@ interface ApproachStep {
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   events: EventItem[] = [];
+  testimonials: TestimonialItem[] = [];
+  activeTestimonial = 0;
+  testimonialVisible = true;
+  testimonialsLoading = true;
+  testimonialsError = false;
+  contact: ContactSettings = { whatsapp: '+91 9302259211', whatsappUrl: 'https://wa.me/919302259211' };
   loadingEvents = true;
   eventsError = false;
+  servicesLoading = true;
+  servicesError = false;
 
   activeClip = 0;
   textVisible = true;
   private clipTimer: any;
+  private testimonialTransitionTimer: ReturnType<typeof setTimeout> | undefined;
 
   heroClips: HeroClip[] = [
     { image: 'assets/images/hero-baraat.jpeg', tagline: 'Your Story Begins Here', sub: 'The Beginning' },
@@ -54,38 +64,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   galleryItems: GalleryItem[] = [
-    { title: 'Barat', image: 'assets/images/hero-baraat.jpeg' },
-    { title: 'Haldi', image: 'https://images.unsplash.com/photo-1647949940712-bfcf82015d9b?w=800&h=1000&fit=crop&auto=format' },
-    { title: 'Mehendi', image: 'https://images.unsplash.com/photo-1686865604150-43f95d61416c?w=800&h=1000&fit=crop&auto=format' },
-    { title: 'Mandap', image: 'assets/images/tailored-gallery-1.jpeg' },
-    { title: 'Sangeet', image: 'https://images.unsplash.com/photo-1640745676611-bee05627a23c?w=800&h=1000&fit=crop&auto=format' },
-    { title: 'Reception', image: 'assets/images/tailored-gallery-3.jpeg' },
-    { title: 'Birthday', image: 'https://images.unsplash.com/photo-1729237261091-bae8eba0c60c?w=800&h=1000&fit=crop&auto=format' },
-    { title: 'Show Flow', image: 'assets/images/tailored-gallery-2.jpeg' }
-  ];
 
-  services: ServiceItem[] = [
-    {
-      title: 'Wedding Planning',
-      desc: 'From the first date to the final farewell, we orchestrate every element of your celebration with precision, care, and creative vision.',
-      image: 'assets/images/hero-baraat.jpeg'
-    },
-    {
-      title: 'D\u00e9cor & Design',
-      desc: 'Lush floral installations, curated colour palettes, and immersive lighting \u2014 we design environments that move people.',
-      image: 'assets/images/tailored-gallery-1.jpeg'
-    },
-    {
-      title: 'Vendor & Guest Management',
-      desc: 'Our curated vendor network brings you India\'s finest photographers, caterers, musicians, and artists.',
-      image: 'https://images.unsplash.com/photo-1712314947761-a8d718bd8c32?w=900&h=700&fit=crop&auto=format'
-    },
-    {
-      title: 'Complete Wedding Management',
-      desc: 'Our signature full-service package. We take full ownership of every function so you experience pure joy.',
-      image: 'assets/images/tailored-gallery-2.jpeg'
-    }
   ];
+  galleryLoading = true;
+  galleryError = false;
+
+  services: ServiceItem[] = [];
 
   approachSteps: ApproachStep[] = [
     { step: '01', title: 'We Listen', desc: 'Your vision, your family, your story. We begin by deeply understanding what your wedding should feel like.', image: 'https://images.unsplash.com/photo-1774024050561-4ee0148c8526?w=800&h=600&fit=crop&auto=format' },
@@ -97,6 +81,19 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
+    this.api.getGalleryCategories().subscribe({
+      next: categories => { this.galleryItems = categories.map(c => ({ title: c.name, slug: c.slug, image: this.api.mediaUrl(c.coverImage) })); this.galleryLoading = false; },
+      error: () => { this.galleryLoading = false; this.galleryError = true; }
+    });
+    this.api.getServices().subscribe({
+      next: items => { this.services = items.map(item => ({ title: item.name, desc: item.description || '', image: this.api.mediaUrl(item.imageUrl) })); this.servicesLoading = false; },
+      error: () => { this.servicesLoading = false; this.servicesError = true; }
+    });
+    this.api.getTestimonials().subscribe({
+      next: items => { this.testimonials = items; this.testimonialsLoading = false; this.activeTestimonial = 0; },
+      error: () => { this.testimonialsLoading = false; this.testimonialsError = true; }
+    });
+    this.api.getContactSettings().subscribe({ next: value => this.contact = { ...this.contact, ...value } });
     this.api.getEvents().subscribe({
       next: (events) => { this.events = events; this.loadingEvents = false; },
       error: () => { this.loadingEvents = false; this.eventsError = true; }
@@ -116,6 +113,24 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.textVisible = true;
   }
 
+  showTestimonial(index: number): void {
+    if (!this.testimonials.length) return;
+    this.activeTestimonial = (index + this.testimonials.length) % this.testimonials.length;
+    this.testimonialVisible = false;
+    if (this.testimonialTransitionTimer) clearTimeout(this.testimonialTransitionTimer);
+    this.testimonialTransitionTimer = setTimeout(() => this.testimonialVisible = true, 20);
+  }
+
+  testimonialTouchStart(event: TouchEvent): void { this.touchStartX = event.changedTouches[0]?.screenX ?? 0; }
+  testimonialTouchEnd(event: TouchEvent): void {
+    const delta = (event.changedTouches[0]?.screenX ?? this.touchStartX) - this.touchStartX;
+    if (Math.abs(delta) > 45) this.showTestimonial(this.activeTestimonial + (delta < 0 ? 1 : -1));
+  }
+  whatsappLink(): string { return this.contact.whatsappUrl || 'https://wa.me/919302259211'; }
+  whatsappLabel(): string { return this.contact.whatsapp || '+91 9302259211'; }
+
+  private touchStartX = 0;
+
   ngAfterViewInit(): void {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -130,5 +145,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.clipTimer) clearInterval(this.clipTimer);
+    if (this.testimonialTransitionTimer) clearTimeout(this.testimonialTransitionTimer);
   }
 }
