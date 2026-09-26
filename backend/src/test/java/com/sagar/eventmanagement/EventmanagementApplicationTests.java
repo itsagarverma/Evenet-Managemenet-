@@ -27,6 +27,7 @@ import java.util.Base64;
 		"DB_URL=jdbc:h2:mem:sneh-test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
 		"DB_USERNAME=sa", "DB_PASSWORD=", "spring.flyway.enabled=false",
 		"spring.jpa.hibernate.ddl-auto=create-drop",
+		"app.gallery.storage.provider=local",
 		"app.upload.directory=${java.io.tmpdir}/sneh-foundation-test-uploads",
 		"ADMIN_BOOTSTRAP_EMAIL=admin@example.test", "ADMIN_BOOTSTRAP_PASSWORD=temporary-test-password-123"
 })
@@ -127,11 +128,11 @@ class EventmanagementApplicationTests {
 		byte[] png = Base64.getDecoder().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aVxsAAAAASUVORK5CYII=");
 		var uploaded = mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart("/api/gallery/admin/categories/" + categoryId + "/images")
 				.file(new MockMultipartFile("files", "pixel.png", "image/png", png)).session(session).cookie(csrfCookie).header("X-XSRF-TOKEN", token))
-				.andExpect(status().isOk()).andExpect(jsonPath("$[0].url").exists()).andReturn();
-		long imageId = new com.fasterxml.jackson.databind.ObjectMapper().readTree(uploaded.getResponse().getContentAsString()).get(0).get("id").asLong();
+				.andExpect(status().isOk()).andExpect(jsonPath("$.items[0].success").value(true)).andExpect(jsonPath("$.items[0].image.url").exists()).andReturn();
+		long imageId = new com.fasterxml.jackson.databind.ObjectMapper().readTree(uploaded.getResponse().getContentAsString()).get("items").get(0).get("image").get("id").asLong();
 		mvc.perform(put("/api/gallery/admin/images/" + imageId).session(session).cookie(csrfCookie).header("X-XSRF-TOKEN", token)
 				.contentType(MediaType.APPLICATION_JSON).content("{\"published\":true,\"displayOrder\":4,\"altText\":\"Integration test image\"}")).andExpect(status().isOk());
-		String mediaUrl = new com.fasterxml.jackson.databind.ObjectMapper().readTree(uploaded.getResponse().getContentAsString()).get(0).get("url").asText();
+		String mediaUrl = new com.fasterxml.jackson.databind.ObjectMapper().readTree(uploaded.getResponse().getContentAsString()).get("items").get(0).get("image").get("url").asText();
 		mvc.perform(get(mediaUrl)).andExpect(status().isOk());
 		mvc.perform(get("/api/gallery/categories/integration-test")).andExpect(status().isOk()).andExpect(jsonPath("$.images.length()").value(1));
 		mvc.perform(put("/api/gallery/admin/categories/" + categoryId).session(session).cookie(csrfCookie).header("X-XSRF-TOKEN", token)
@@ -142,12 +143,22 @@ class EventmanagementApplicationTests {
 		mvc.perform(put("/api/gallery/admin/images/" + imageId).session(session).cookie(csrfCookie).header("X-XSRF-TOKEN", token)
 				.contentType(MediaType.APPLICATION_JSON).content("{\"published\":false}")).andExpect(status().isOk());
 		mvc.perform(get("/api/gallery/categories/integration-test")).andExpect(status().isOk()).andExpect(jsonPath("$.images.length()").value(0));
+		var partial = mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart("/api/gallery/admin/categories/" + categoryId + "/images")
+				.file(new MockMultipartFile("files", "bad.txt", "text/plain", "bad".getBytes()))
+				.file(new MockMultipartFile("files", "pixel.png", "image/png", png)).session(session).cookie(csrfCookie).header("X-XSRF-TOKEN", token))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.items.length()").value(2))
+				.andExpect(jsonPath("$.items[0].success").value(false)).andExpect(jsonPath("$.items[1].success").value(true)).andReturn();
+		long partialImageId = new com.fasterxml.jackson.databind.ObjectMapper().readTree(partial.getResponse().getContentAsString()).get("items").get(1).get("image").get("id").asLong();
 		mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart("/api/gallery/admin/categories/" + categoryId + "/images")
 				.file(new MockMultipartFile("files", "wrong.txt", "text/plain", "not image".getBytes())).session(session).cookie(csrfCookie).header("X-XSRF-TOKEN", token))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isOk()).andExpect(jsonPath("$.items[0].success").value(false))
+				.andExpect(jsonPath("$.items[0].error").value("Only JPEG, PNG, and GIF images are allowed"));
 		mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart("/api/gallery/admin/categories/" + categoryId + "/images")
 				.file(new MockMultipartFile("files", "too-large.png", "image/png", new byte[10 * 1024 * 1024 + 1])).session(session).cookie(csrfCookie).header("X-XSRF-TOKEN", token))
-				.andExpect(status().isPayloadTooLarge());
+				.andExpect(status().isOk()).andExpect(jsonPath("$.items[0].success").value(false))
+				.andExpect(jsonPath("$.items[0].error").value("Each image must be at most 10 MB"));
+		mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/gallery/admin/images/" + partialImageId)
+				.session(session).cookie(csrfCookie).header("X-XSRF-TOKEN", token)).andExpect(status().isOk());
 		mvc.perform(get("/api/admin/contact-settings").session(session)).andExpect(status().isOk());
 		mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/gallery/admin/categories/" + categoryId)
 				.session(session).cookie(csrfCookie).header("X-XSRF-TOKEN", token)).andExpect(status().isOk());

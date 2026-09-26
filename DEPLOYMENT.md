@@ -55,7 +55,13 @@ Set these in the backend host’s secret/configuration dashboard. Never put secr
 | `SECURE_COOKIES=true` | Secure/SameSite=None CSRF cookie for HTTPS cross-site frontend/API |
 | `SESSION_COOKIE_SECURE=true` | Secure session cookie on HTTPS |
 | `SESSION_COOKIE_SAME_SITE=None` | Cross-site session cookie when frontend/API are on separate sites over HTTPS |
-| `UPLOAD_DIRECTORY` | Absolute path to durable image storage mounted into the backend |
+| `SPRING_PROFILES_ACTIVE=prod` | Requires the Supabase gallery storage provider; missing Supabase credentials fail startup |
+| `SUPABASE_STORAGE_ENDPOINT` | S3-compatible endpoint from Supabase Storage → S3 Connection |
+| `SUPABASE_STORAGE_REGION` | Region shown in the same S3 connection settings |
+| `SUPABASE_STORAGE_ACCESS_KEY`, `SUPABASE_STORAGE_SECRET_KEY` | Server-only S3 access key pair generated in Supabase Storage settings |
+| `SUPABASE_STORAGE_BUCKET=gallery` | Dedicated public portfolio bucket name |
+| `SUPABASE_STORAGE_PUBLIC_URL` | Public object URL prefix, through `/storage/v1/object/public` (exclude bucket name) |
+| `UPLOAD_DIRECTORY` | Local filesystem fallback for development only; not used by the `prod` profile |
 | `BREVO_API_KEY`, `BREVO_SENDER_EMAIL` | Brevo notification configuration |
 | `NOTIFICATION_EMAIL` | Optional enquiry notification recipient; defaults to the sender email |
 
@@ -87,11 +93,13 @@ The checked-in Flyway history contains `V1__foundation_schema.sql` plus `V2__con
 
 Production PostgreSQL access was not available during this repository task, so the production migration is not claimed as verified.
 
-## 6. Durable image storage
+## 6. Gallery storage: Supabase Storage in production
 
-Gallery files are stored on the backend filesystem; PostgreSQL stores the image key and gallery metadata only. The actual service disk configuration cannot be inspected from this repository. Render web service filesystems are ephemeral unless a persistent disk is attached. Before enabling real uploads, attach a persistent disk to the backend service, mount it at an absolute path, set `UPLOAD_DIRECTORY` to that mount path, and verify a test upload survives a redeploy. Retain that disk when replacing the service. If the account/plan does not support a persistent disk, uploads must remain disabled until the application is connected to an approved object store.
+Production runs with `SPRING_PROFILES_ACTIVE=prod`; this selects the Supabase S3-compatible storage provider and does not use Render's local filesystem. The default local profile remains available for development and uses `UPLOAD_DIRECTORY` (default `./uploads`). PostgreSQL continues to store category/image metadata and the object key only; it does not store image bytes or server credentials. New keys are generated as `{category-slug}/{uuid}.{jpg|png|gif}` inside the `gallery` bucket. Keys stay stable if a category slug is later renamed.
 
-Do not upload real wedding photos until persistence has been confirmed in the deployed service. No object-storage account or credentials are configured in this repository.
+Use a **public** bucket because published wedding portfolio images must load directly in anonymous visitors' browsers. This makes object reads public; uploads and deletes still go through authenticated Spring Boot admin endpoints. The S3 access key pair has broad storage permissions and bypasses bucket RLS, so keep it only in Render's secret environment configuration. Supabase documents both the public URL form and that S3 access keys are server-only ([S3 authentication](https://supabase.com/docs/guides/storage/s3/authentication), [serving public assets](https://supabase.com/docs/guides/storage/serving/downloads)). No Supabase project dashboard was available to check for an existing bucket or perform a live upload.
+
+No files were found under the repository's `backend/uploads/` directory. The supplied pre-migration database backup at `~/Backups/The-Sneh-Moments/sneh-moments-pre-migration.dump` was not modified. The production database and Render filesystem were not accessible, so check them before switching the Render service. Preserve every existing object: copy old flat object keys into the `gallery` bucket with the same key so existing metadata continues to resolve; do not delete old files until each public URL has been checked. No Flyway schema change is required because `gallery_images.storage_key` already stores the object key.
 
 ## 7. Netlify frontend deployment
 
@@ -101,9 +109,9 @@ Connect the GitHub repository in Netlify and use the settings in section 13. The
 
 ## 8. Render backend deployment
 
-The API URL is `https://evenet-managemenet.onrender.com`. Configure the Render Web Service from this repository with Root Directory `backend`, Docker runtime, Dockerfile path `Dockerfile`, and Docker context `.`. The container listens on Render’s `PORT` (8080 locally). Attach the intended Render PostgreSQL database and set `DATABASE_URL` from that database’s dashboard. The repository does not identify the database instance or provide dashboard access.
+The API URL is `https://evenet-managemenet.onrender.com`. Configure the Render Web Service from this repository with Root Directory `backend`, Docker runtime, Dockerfile path `Dockerfile`, and Docker context `.`. The container listens on Render’s `PORT` (8080 locally). Attach the intended Supabase PostgreSQL database and set `DATABASE_URL` from that database’s dashboard. The repository does not identify the database instance or provide dashboard access.
 
-Set `CORS_ALLOWED_ORIGINS=https://thesnehmoments.in`, `SECURE_COOKIES=true`, `SESSION_COOKIE_SECURE=true`, and `SESSION_COOKIE_SAME_SITE=None` for the HTTPS frontend and API. If the site uses another origin, include that exact origin too. Configure a persistent disk mounted at `/var/data` and `UPLOAD_DIRECTORY=/var/data/uploads` before enabling gallery uploads. Render filesystems are ephemeral unless a persistent disk is attached; only data under the mount path persists ([persistent disk documentation](https://render.com/docs/disks), [free plan limitations](https://render.com/docs/free)). The disk attachment and survival test require the service dashboard. The checked-in GitHub workflow does not deploy the backend.
+Set `SPRING_PROFILES_ACTIVE=prod`, the Supabase variables in section 4, `CORS_ALLOWED_ORIGINS=https://thesnehmoments.in`, `SECURE_COOKIES=true`, `SESSION_COOKIE_SECURE=true`, and `SESSION_COOKIE_SAME_SITE=None` for the HTTPS frontend and API. Add another exact origin only if the deployed site needs it. Do not configure a Render disk or production `UPLOAD_DIRECTORY` for gallery images. No secrets belong in Netlify, Angular source, Docker build arguments, or image layers. The checked-in GitHub workflow does not deploy the backend.
 
 ## 9. Git workflow and frontend ZIP
 
@@ -142,11 +150,11 @@ The supplied `frontend.zip` and `backend.zip` are original input archives and sh
 
 ## 11. Rollback considerations
 
-Keep the last known-good backend image/build and frontend bundle. Roll back application versions through the selected hosting provider’s release controls. A schema migration may be forward-compatible but cannot be assumed reversible; restore a verified database backup only after assessing writes made since deployment. Preserve the persistent image disk independently of app rollback. Do not delete or recreate the production database or upload disk as a routine rollback action.
+Keep the last known-good backend image/build and frontend bundle. Roll back application versions through the selected hosting provider’s release controls. A schema migration may be forward-compatible but cannot be assumed reversible; restore a verified database backup only after assessing writes made since deployment. Preserve the Supabase bucket and its objects independently of app rollback. Do not delete or recreate the production database or bucket as a routine rollback action.
 
 ## 12. Deployment readiness
 
-The Netlify build and SPA fallback are checked into source, and the Render production values are documented. This does not certify a production deployment: the Netlify domain and direct-route behavior, Render persistent disk, production PostgreSQL migration, real backup/restore, and deployed browser flows require provider access and post-deployment verification. Keep real gallery uploads disabled until the disk survival check passes.
+The Netlify build and SPA fallback are checked into source, and the Render production values are documented. This does not certify a production deployment: the Supabase bucket/access keys, live upload/delete, existing production image migration, PostgreSQL connection, real backup/restore, and deployed browser flows require provider access and post-deployment verification. Keep gallery uploads disabled until the live Supabase acceptance test passes.
 
 ## 13. Exact Netlify settings
 
@@ -166,12 +174,41 @@ The Netlify build and SPA fallback are checked into source, and the Render produ
 - Health check: none configured in this application; do not set an actuator path
 - Database: attach/select the intended PostgreSQL instance and use its dashboard-provided `DATABASE_URL`
 - Required production values: `CORS_ALLOWED_ORIGINS=https://thesnehmoments.in`, `SECURE_COOKIES=true`, `SESSION_COOKIE_SECURE=true`, `SESSION_COOKIE_SAME_SITE=None`
-- Durable uploads: attach disk at `/var/data`, set `UPLOAD_DIRECTORY=/var/data/uploads`, then verify a file survives redeploy
+- Gallery provider: `SPRING_PROFILES_ACTIVE=prod` (forces Supabase; missing credentials fail startup)
+- Storage values: `SUPABASE_STORAGE_ENDPOINT`, `SUPABASE_STORAGE_REGION`, `SUPABASE_STORAGE_ACCESS_KEY`, `SUPABASE_STORAGE_SECRET_KEY`, `SUPABASE_STORAGE_BUCKET=gallery`, and `SUPABASE_STORAGE_PUBLIC_URL`
+- Render persistent disk: not required for gallery images; production does not use `UPLOAD_DIRECTORY`
 - Conditional values: admin bootstrap credentials for first setup only; Brevo settings only when email notifications are configured
 
-Apply Render settings and disk attachment in its dashboard. Production secrets are not stored in the repository.
+Apply the Render environment settings in its dashboard. Production secrets are not stored in the repository.
 
-## 15. Exact migration and backup procedure
+## 15. Supabase Storage setup
+
+1. Open the existing Supabase project and go to **Storage**. Check whether a suitable `gallery` bucket already exists before creating one.
+2. Use the dedicated `gallery` bucket. Set it to **public** so public portfolio images can load without an admin session. Do not add anonymous write policies.
+3. In project Storage settings, enable/use the S3 connection and generate an S3 access key pair. Copy the endpoint, region, access key ID, and secret access key. Supabase documents the S3 endpoint shape as `https://<project-ref>.storage.supabase.co/storage/v1/s3`; use the exact endpoint and region displayed in the dashboard.
+4. In the same project, construct `SUPABASE_STORAGE_PUBLIC_URL` from the project URL ending in `/storage/v1/object/public` (do not append the bucket name). Public objects resolve as `{public-url}/{bucket}/{object-key}`. The application generates category-prefixed UUID object keys and sets a one-year immutable cache header.
+5. Add those values only to Render's server-side environment. Never add access keys to Netlify, Angular, Git, or Docker build args. The S3 access key pair can access all buckets and bypasses Storage RLS, so restrict access to trusted maintainers.
+6. Deploy with `SPRING_PROFILES_ACTIVE=prod`. The application fails startup if any required storage value is missing or if endpoints do not use HTTPS. No migration is made to PostgreSQL.
+7. Log in to Admin → Gallery, create a temporary category, upload one disposable JPEG/PNG/GIF, and confirm its preview and returned public URL.
+8. Publish it, open its public category URL, and confirm the image loads without admin cookies. Restart/redeploy the Render backend and confirm the same Supabase URL still works.
+9. Delete the test image/category from Admin and confirm the object is removed from the bucket. If any object deletion fails, metadata remains unpublished for a retry.
+
+Live Supabase upload and restart survival are not verified from this repository. Check the production database and any existing Render uploads before switching; migrate any existing objects under their current storage keys before enabling the new provider.
+
+If a checked database key has a matching file in an old local upload directory, copy only that referenced file before switching. With the Supabase S3 credentials supplied in the process environment and `OBJECT_KEY` copied from the database (not user input), the AWS CLI command is:
+
+```bash
+export AWS_ACCESS_KEY_ID="$SUPABASE_STORAGE_ACCESS_KEY"
+export AWS_SECRET_ACCESS_KEY="$SUPABASE_STORAGE_SECRET_KEY"
+export AWS_DEFAULT_REGION="$SUPABASE_STORAGE_REGION"
+aws s3 cp "$OLD_UPLOAD_DIRECTORY/$OBJECT_KEY" "s3://$SUPABASE_STORAGE_BUCKET/$OBJECT_KEY" \
+  --endpoint-url "$SUPABASE_STORAGE_ENDPOINT" \
+  --cache-control 'public, max-age=31536000, immutable'
+```
+
+Verify the object's public URL and image contents before retiring the original file. The repository upload directory was empty during this work; production Render files and database rows were not accessible, so check both first. The specified database backup is user-owned and must remain unchanged.
+
+## 16. Exact migration and backup procedure
 
 1. Confirm the selected Render PostgreSQL database and inspect its existing schema and enquiry data.
 2. Create a provider snapshot or run the verified `pg_dump` procedure in section 5; retain the archive outside the service disk.
