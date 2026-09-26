@@ -1,9 +1,7 @@
 package com.sagar.eventmanagement.gallery.storage;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
-@Component
 @ConfigurationProperties(prefix = "app.gallery.storage.supabase")
 public class SupabaseStorageProperties {
     private String endpoint;

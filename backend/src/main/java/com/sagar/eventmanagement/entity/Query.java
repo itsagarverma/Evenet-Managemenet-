@@ -30,7 +30,7 @@ public class Query {
     private String message;
 
     private Integer guestCount;
-    @Column(length=120) private String budget;
+    private Double budget;
 
     @Column(nullable=false) private Instant createdAt = Instant.now();
     @Enumerated(EnumType.STRING) @Column(nullable=false, length=24) private LeadStatus status = LeadStatus.NEW;

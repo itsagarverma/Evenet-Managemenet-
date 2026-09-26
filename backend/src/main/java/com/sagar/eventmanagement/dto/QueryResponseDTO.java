@@ -18,7 +18,7 @@ public class QueryResponseDTO {
     private String specialRequirements;
     private String message;
     private Integer guestCount;
-    private String budget;
+    private Double budget;
     private Instant createdAt;
     private LeadStatus status;
     private LocalDate followUpDate;

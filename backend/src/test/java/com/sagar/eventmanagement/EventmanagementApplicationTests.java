@@ -39,18 +39,55 @@ class EventmanagementApplicationTests {
 	void contextLoads() {
 	}
 
-	@Test void contactMigrationAppliesToAnIsolatedPostgresModeValidationDatabase() throws Exception {
+	@Test void supabaseStoragePropertiesAreRegisteredExactlyOnceWhenEnabled() {
+		new org.springframework.boot.test.context.runner.ApplicationContextRunner()
+				.withUserConfiguration(com.sagar.eventmanagement.gallery.storage.SupabaseStorageConfiguration.class)
+				.withPropertyValues(
+						"app.gallery.storage.provider=supabase",
+						"app.gallery.storage.supabase.endpoint=https://storage.example.test",
+						"app.gallery.storage.supabase.region=local",
+						"app.gallery.storage.supabase.accessKey=test-access",
+						"app.gallery.storage.supabase.secretKey=test-secret",
+						"app.gallery.storage.supabase.bucket=gallery",
+						"app.gallery.storage.supabase.publicUrl=https://storage.example.test/public")
+				.run(context -> {
+					Assertions.assertTrue(context.isRunning());
+					Assertions.assertEquals(1, context.getBeanNamesForType(
+							com.sagar.eventmanagement.gallery.storage.SupabaseStorageProperties.class).length);
+					var properties = context.getBean(com.sagar.eventmanagement.gallery.storage.SupabaseStorageProperties.class);
+					Assertions.assertEquals("https://storage.example.test", properties.getEndpoint());
+					Assertions.assertEquals("local", properties.getRegion());
+					Assertions.assertEquals("test-access", properties.getAccessKey());
+					Assertions.assertEquals("test-secret", properties.getSecretKey());
+					Assertions.assertEquals("gallery", properties.getBucket());
+					Assertions.assertEquals("https://storage.example.test/public", properties.getPublicUrl());
+				});
+	}
+
+	@Test void migrationsCreateContactSettingsAndUseNumericQueryBudget() throws Exception {
 		String url = "jdbc:h2:mem:sneh-flyway-check;MODE=PostgreSQL;DB_CLOSE_DELAY=-1";
+		try (var connection = java.sql.DriverManager.getConnection(url, "sa", "")) {
+			connection.createStatement().execute("CREATE TABLE \"query\" (id BIGINT PRIMARY KEY, full_name VARCHAR(255), budget VARCHAR(120))");
+			connection.createStatement().executeUpdate("INSERT INTO \"query\" (id, full_name, budget) VALUES (1, 'Existing budget', '750000.25')");
+		}
 		var flyway = org.flywaydb.core.Flyway.configure().dataSource(url, "sa", "")
 				.locations("classpath:db/migration").load();
 		flyway.baseline();
 		var result = flyway.migrate();
-		Assertions.assertEquals(1, result.migrationsExecuted);
+		Assertions.assertEquals(2, result.migrationsExecuted);
 		try (var connection = java.sql.DriverManager.getConnection(url, "sa", "");
 			 var statement = connection.createStatement();
 			 var rows = statement.executeQuery("SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'CONTACT_SETTINGS'")) {
 			Assertions.assertTrue(rows.next());
 			Assertions.assertEquals(1, rows.getInt(1));
+		}
+		try (var connection = java.sql.DriverManager.getConnection(url, "sa", "");
+			 var statement = connection.createStatement();
+			 var rows = statement.executeQuery("SELECT budget FROM \"query\" WHERE full_name = 'Existing budget'")) {
+			Assertions.assertTrue(rows.next());
+			Object budget = rows.getObject(1);
+			Assertions.assertTrue(budget instanceof Number);
+			Assertions.assertEquals(750000.25, ((Number) budget).doubleValue());
 		}
 	}
 
