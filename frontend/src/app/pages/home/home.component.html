@@ -34,7 +34,7 @@
   <img src="assets/images/tailored-gallery-3.jpeg" alt="The Sneh Moments - couple celebrating">
   <div class="story-overlay"></div>
   <div class="story-content-wrap container">
-    <div class="story-content fade-up">
+    <div class="story-content fade-up" #revealElement>
       <span class="divider-gold"></span>
       <p class="eyebrow">Our Story</p>
       <h2 class="story-title">More Than Just A Wedding.<br>It's Your Story.</h2>
@@ -47,13 +47,13 @@
 <!-- WHAT WE DO -->
 <section id="services" class="section" style="background-color: var(--color-ivory);">
   <div class="container">
-    <div class="section-header fade-up">
+    <div class="section-header fade-up" #revealElement>
       <span class="divider-gold"></span>
       <p class="eyebrow">What We Do</p>
       <h2 class="section-title" style="color: var(--color-charcoal);">Services Crafted With Devotion</h2>
     </div>
 
-    <div class="service-row fade-up" *ngFor="let s of services; let i = index" [class.reverse]="i % 2 !== 0">
+    <div class="service-row fade-up" #revealElement *ngFor="let s of services; let i = index" [class.reverse]="i % 2 !== 0">
       <div class="service-image img-zoom">
         <img [src]="s.image" [alt]="s.title">
       </div>
@@ -74,14 +74,14 @@
 <!-- EXPERIENCES / GALLERY -->
 <section id="experiences" class="section" style="background-color: var(--color-charcoal);">
   <div class="container">
-    <div class="section-header fade-up">
+    <div class="section-header fade-up" #revealElement>
       <span class="divider-gold"></span>
       <p class="eyebrow">The Experiences</p>
       <h2 class="section-title" style="color: var(--color-ivory);">Every Function, A Photographic Story</h2>
     </div>
 
     <div class="gallery-grid">
-      <a class="gallery-item img-zoom fade-up" *ngFor="let g of galleryItems" [routerLink]="['/our-work', g.slug]">
+      <a class="gallery-item img-zoom fade-up" #revealElement *ngFor="let g of galleryItems" [routerLink]="['/our-work', g.slug]">
         <img [src]="g.image" [alt]="g.title">
         <div class="gallery-item-overlay"></div>
         <div class="gallery-item-label">{{ g.title }}</div>
@@ -96,13 +96,13 @@
 <!-- UPCOMING EVENTS (live from backend) -->
 <section id="events" class="section" style="background-color: var(--color-ivory);" *ngIf="!loadingEvents && !eventsError && events.length > 0">
   <div class="container">
-    <div class="section-header fade-up">
+    <div class="section-header fade-up" #revealElement>
       <span class="divider-gold"></span>
       <p class="eyebrow">Upcoming Events</p>
       <h2 class="section-title" style="color: var(--color-charcoal);">Join Us At These Celebrations</h2>
     </div>
     <div class="events-grid">
-      <div class="event-card fade-up" *ngFor="let event of events">
+      <div class="event-card fade-up" #revealElement *ngFor="let event of events">
         <h3>{{ event.title }}</h3>
         <p class="event-meta">{{ event.eventDate }} &middot; {{ event.location }}</p>
         <p class="event-desc">{{ event.description }}</p>
@@ -114,13 +114,13 @@
 <!-- OUR APPROACH -->
 <section class="section" style="background-color: var(--color-cream);">
   <div class="container">
-    <div class="section-header fade-up">
+    <div class="section-header fade-up" #revealElement>
       <span class="divider-gold"></span>
       <p class="eyebrow">Our Approach</p>
       <h2 class="section-title" style="color: var(--color-charcoal);">How We Bring Your Dream to Life</h2>
     </div>
 
-    <div class="approach-row fade-up" *ngFor="let step of approachSteps; let i = index" [class.reverse]="i % 2 !== 0">
+    <div class="approach-row fade-up" #revealElement *ngFor="let step of approachSteps; let i = index" [class.reverse]="i % 2 !== 0">
       <div class="approach-image img-zoom">
         <img [src]="step.image" [alt]="step.title">
       </div>
@@ -138,7 +138,7 @@
 <!-- TESTIMONIALS (published content from the CMS) -->
 <section id="testimonials" class="section testimonial-section" aria-labelledby="testimonials-title">
   <div class="container">
-    <div class="section-header fade-up">
+    <div class="section-header fade-up" #revealElement>
       <span class="divider-gold"></span>
       <p class="eyebrow">Kind Words</p>
       <h2 id="testimonials-title" class="section-title" style="color: var(--color-charcoal);">Love, In Their Words</h2>
@@ -170,7 +170,7 @@
 <section class="final-cta">
   <img src="assets/images/hero-baraat.jpeg" alt="The Sneh Moments - your wedding starts here">
   <div class="final-cta-overlay"></div>
-  <div class="final-cta-content fade-up">
+  <div class="final-cta-content fade-up" #revealElement>
     <span class="divider-gold"></span>
     <h2 class="final-cta-title">Your Wedding<br>Starts Here.</h2>
     <p class="final-cta-desc">Begin your journey with The Sneh Moments. Tell us your story and let us craft the celebration of a lifetime.</p>

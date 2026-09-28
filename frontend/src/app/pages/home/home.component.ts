@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../shared/navbar/navbar.component';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { ApiService, ContactSettings, EventItem, GalleryCategory, TestimonialItem } from '../../core/services/api.service';
+import { Subscription } from 'rxjs';
 
 interface HeroClip {
   image: string;
@@ -39,6 +40,9 @@ interface ApproachStep {
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChildren('revealElement', { read: ElementRef })
+  private revealElements!: QueryList<ElementRef<HTMLElement>>;
+
   events: EventItem[] = [];
   testimonials: TestimonialItem[] = [];
   activeTestimonial = 0;
@@ -55,6 +59,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   textVisible = true;
   private clipTimer: any;
   private testimonialTransitionTimer: ReturnType<typeof setTimeout> | undefined;
+  private revealObserver?: IntersectionObserver;
+  private revealElementsSubscription?: Subscription;
+  private readonly observedRevealElements = new Set<Element>();
 
   heroClips: HeroClip[] = [
     { image: 'assets/images/hero-baraat.jpeg', tagline: 'Your Story Begins Here', sub: 'The Beginning' },
@@ -132,19 +139,46 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private touchStartX = 0;
 
   ngAfterViewInit(): void {
-    const observer = new IntersectionObserver(
+    this.revealObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add('visible');
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            this.revealObserver?.unobserve(entry.target);
+            this.observedRevealElements.delete(entry.target);
+          }
         });
       },
       { threshold: 0.15 }
     );
-    document.querySelectorAll('.fade-up').forEach((el) => observer.observe(el));
+    this.observeRevealElements();
+    this.revealElementsSubscription = this.revealElements.changes.subscribe(() => this.observeRevealElements());
+  }
+
+  private observeRevealElements(): void {
+    const observer = this.revealObserver;
+    if (!observer) return;
+
+    const currentElements = new Set<Element>(this.revealElements.map(({ nativeElement }) => nativeElement));
+    this.observedRevealElements.forEach((element) => {
+      if (!currentElements.has(element)) {
+        observer.unobserve(element);
+        this.observedRevealElements.delete(element);
+      }
+    });
+
+    currentElements.forEach((element) => {
+      if (element.classList.contains('visible') || this.observedRevealElements.has(element)) return;
+      observer.observe(element);
+      this.observedRevealElements.add(element);
+    });
   }
 
   ngOnDestroy(): void {
     if (this.clipTimer) clearInterval(this.clipTimer);
     if (this.testimonialTransitionTimer) clearTimeout(this.testimonialTransitionTimer);
+    this.revealElementsSubscription?.unsubscribe();
+    this.revealObserver?.disconnect();
+    this.observedRevealElements.clear();
   }
 }
