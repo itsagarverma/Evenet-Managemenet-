@@ -3,6 +3,7 @@ package com.sagar.eventmanagement;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.mock.web.MockHttpSession;
@@ -30,10 +31,15 @@ import java.util.Base64;
 		"app.gallery.storage.provider=local",
 		"app.upload.directory=${java.io.tmpdir}/sneh-foundation-test-uploads",
 		"app.cookies.secure=true",
+		"server.servlet.session.cookie.secure=true",
+		"server.servlet.session.cookie.http-only=true",
+		"server.servlet.session.cookie.path=/",
+		"server.servlet.session.cookie.same-site=none",
 		"ADMIN_BOOTSTRAP_EMAIL=admin@example.test", "ADMIN_BOOTSTRAP_PASSWORD=temporary-test-password-123"
 })
 class EventmanagementApplicationTests {
 	@Autowired MockMvc mvc;
+	@Autowired ServerProperties serverProperties;
 	@Autowired TestimonialRepository testimonialRepository;
 
 	@Test
@@ -53,6 +59,14 @@ class EventmanagementApplicationTests {
 				.findFirst().orElseThrow();
 		Assertions.assertTrue(csrfCookie.contains("Path=/"), csrfCookie);
 		Assertions.assertTrue(csrfCookie.contains("Secure"), csrfCookie);
+	}
+
+	@Test void authenticatedSessionCookieUsesCrossSiteSecureAttributesWhenEnabled() throws Exception {
+		var cookie = serverProperties.getServlet().getSession().getCookie();
+		Assertions.assertEquals("/", cookie.getPath());
+		Assertions.assertEquals("NONE", cookie.getSameSite().name());
+		Assertions.assertEquals(Boolean.TRUE, cookie.getSecure());
+		Assertions.assertEquals(Boolean.TRUE, cookie.getHttpOnly());
 	}
 
 	@Test void supabaseStoragePropertiesAreRegisteredExactlyOnceWhenEnabled() {
