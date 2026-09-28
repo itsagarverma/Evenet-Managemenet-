@@ -29,6 +29,7 @@ import java.util.Base64;
 		"spring.jpa.hibernate.ddl-auto=create-drop",
 		"app.gallery.storage.provider=local",
 		"app.upload.directory=${java.io.tmpdir}/sneh-foundation-test-uploads",
+		"app.cookies.secure=true",
 		"ADMIN_BOOTSTRAP_EMAIL=admin@example.test", "ADMIN_BOOTSTRAP_PASSWORD=temporary-test-password-123"
 })
 class EventmanagementApplicationTests {
@@ -37,6 +38,21 @@ class EventmanagementApplicationTests {
 
 	@Test
 	void contextLoads() {
+	}
+
+	@Test void csrfCookieUsesCrossSiteSecureAttributesWhenEnabled() throws Exception {
+		var response = mvc.perform(get("/api/auth/csrf")).andExpect(status().isOk()).andReturn().getResponse();
+		var csrfServletCookie = response.getCookie("XSRF-TOKEN");
+		Assertions.assertNotNull(csrfServletCookie);
+		Assertions.assertEquals("/", csrfServletCookie.getPath());
+		Assertions.assertEquals("None", csrfServletCookie.getAttribute("SameSite"));
+		Assertions.assertTrue(csrfServletCookie.getSecure());
+		Assertions.assertFalse(csrfServletCookie.isHttpOnly());
+		var csrfCookie = response.getHeaders("Set-Cookie").stream()
+				.filter(cookie -> cookie.startsWith("XSRF-TOKEN="))
+				.findFirst().orElseThrow();
+		Assertions.assertTrue(csrfCookie.contains("Path=/"), csrfCookie);
+		Assertions.assertTrue(csrfCookie.contains("Secure"), csrfCookie);
 	}
 
 	@Test void supabaseStoragePropertiesAreRegisteredExactlyOnceWhenEnabled() {
